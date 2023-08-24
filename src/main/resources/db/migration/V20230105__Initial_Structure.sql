@@ -7,5 +7,5 @@ CREATE TABLE authors
     deleted_at TIMESTAMP WITH TIME ZONE          DEFAULT NULL,
     name       TEXT                     NOT NULL,
     birth_date DATE                     NOT NULL,
-    UNIQUE NULLS NOT DISTINCT (name, birth_date, deleted_at)
-);
+    CONSTRAINT unique_author_name_birth_deleted UNIQUE (name, birth_date, deleted_at)
+)

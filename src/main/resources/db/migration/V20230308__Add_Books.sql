@@ -6,9 +6,11 @@ CREATE TABLE books
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     deleted_at TIMESTAMP WITH TIME ZONE          DEFAULT NULL,
     isbn       TEXT                     NOT NULL UNIQUE,
-    title      TEXT                     NOT NULL,
-    UNIQUE NULLS NOT DISTINCT (isbn, deleted_at)
+    title      TEXT                     NOT NULL
 );
+
+-- Creating a partial unique index to allow multiple NULL values in (isbn, deleted_at)
+CREATE UNIQUE INDEX idx_books_isbn_deleted_at_unique_nulls ON books (isbn) WHERE deleted_at IS NULL;
 
 CREATE TABLE authors_books
 (
