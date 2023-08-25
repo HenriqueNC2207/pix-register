@@ -47,6 +47,7 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok")
     testImplementation("dev.akif:spring-boot-crud-test:$springBootCrudVersion")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    implementation ("org.springframework.boot:spring-boot-starter-jdbc")
 }
 
 tasks.withType<Test> {
