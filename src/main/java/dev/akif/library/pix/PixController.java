@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
@@ -35,9 +36,13 @@ public class PixController extends CRUDController<
         PixService> {
 
     private final PixService pixService;
-    public PixController(final PixService service, final PixDTOMapper mapper) {
-        super("Pix", service, mapper);
+    private final PixMapper pixMapper;
+     private final PixDTOMapper pixDTOMapper;
+    public PixController(final PixService service, final PixDTOMapper pixDTOMapper, final PixMapper pixMapper) {
+        super("Pix", service, pixDTOMapper);
         this.pixService = service;
+        this.pixMapper = pixMapper;
+        this.pixDTOMapper = pixDTOMapper;
     }
     private static final String LIST_BOOKS_SUMMARY = "List books of author";
     private static final String LIST_BOOKS_DESCRIPTION = "End point para crição de chave pix";
@@ -48,17 +53,19 @@ public class PixController extends CRUDController<
     @ApiResponse(responseCode = "422", description = "Inclusão não realizada, não respeita condições")
     @PostMapping(path = "/CriarPix", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = LIST_BOOKS_SUMMARY, description = LIST_BOOKS_DESCRIPTION)
+    @ResponseBody
     public ResponseEntity<String> createUsingRepository(
             @Valid @RequestBody CreatePixDTO createPixDTO, // Adicione esta linha
             @Parameter(hidden = true)
             @PathVariable
             final Map<String, String> pathVariables,
             @Parameter(hidden = true)
-            HttpServletRequest request
-    ) {
+            HttpServletRequest request  
+    ) { 
         final var parameters = new Parameters(pathVariables, request);
         Instant now = Instant.now();
-        PixEntity pixEntity = PixEntity.fromCreatePixDTO(createPixDTO, now);
+        CreatePix createPix = pixDTOMapper.createDTOToCreateModel(createPixDTO, parameters);
+        PixEntity pixEntity = pixMapper.entityToBeCreatedFrom(createPix, now);
         Object createdPix = pixService.createPix(pixEntity, parameters);
         if (createdPix instanceof PixEntity) {
             PixEntity createdEntity = (PixEntity) createdPix;
@@ -73,6 +80,6 @@ public class PixController extends CRUDController<
         } else {
             // Handle unexpected type
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected response type");
-        }
+        } 
     }
 }

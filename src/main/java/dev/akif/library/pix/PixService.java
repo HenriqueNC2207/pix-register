@@ -18,30 +18,11 @@ public class PixService extends CRUDService<UUID, PixEntity,Pix, CreatePix, Upda
     
     protected  Object createPix(final PixEntity pixEntity, final Parameters parameters) {
         Object retornoValidacao = validaChavePix(pixEntity);
-        System.out.println(retornoValidacao);
-        if(retornoValidacao == null ){
+        if(retornoValidacao == null){
             return getRepository().save(pixEntity);
         }
         return retornoValidacao.toString();
         
-    }
-
-    @Override
-    protected PixEntity getUsingRepository(UUID arg0, Parameters arg1) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getUsingRepository'");
-    }
-
-    @Override
-    protected int updateUsingRepository(PixEntity arg0, Parameters arg1) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'updateUsingRepository'");
-    }
-
-
-    @Override
-    protected Page<PixEntity> listUsingRepository(final Pageable pageable, final Parameters parameters) {
-        return getRepository().findAllByDeletedAtIsNull(pageable);
     }
 
     public Boolean verificarCPF (String cpf) {
@@ -150,8 +131,10 @@ public class PixService extends CRUDService<UUID, PixEntity,Pix, CreatePix, Upda
     }
 
     public Object validaChavePix (final PixEntity pixEntity){
+        long limite = pixEntity.getTipoPessoa().equals("F") ? 5 : 20;
         if(validarDuplicados(pixEntity.getValorChave()) ){
-            if(pixEntity.getTipoPessoa() == "J" || pixEntity.getTipoPessoa() == "F"){
+            if(pixEntity.getTipoPessoa().equals("J") || pixEntity.getTipoPessoa().equals("F")){
+                if(validaQtdChavesConta(pixEntity)){
             switch(pixEntity.getTipoChave()){
             case "cpf":
                 if(verificarCPF(pixEntity.getValorChave())){
@@ -177,14 +160,48 @@ public class PixService extends CRUDService<UUID, PixEntity,Pix, CreatePix, Upda
         }
         }
         else{
+            return "Erro na verificação, Conta já possui o limite de  chaves cadastradas, limite de chaves para conta: " +  limite;
+        }
+        }
+        else{
             return "Erro na verificação, tipo de pessoa precisa ser J ou F" +  pixEntity.getTipoPessoa();
         }
+        
         }
         else{
             return "Erro na verificação, chave pix duplicada:  " +  pixEntity.getValorChave();
         }
+       
         return null;
         
+    }
+
+    public boolean validaQtdChavesConta (final PixEntity pixEntity){
+        long limite = pixEntity.getTipoPessoa().equals("F") ? 5 : 20;
+        if(getRepository().countByNumContaAndNumAgencia(pixEntity.getNumConta(), pixEntity.getNumAgencia()) >= limite){
+            return false;
+        }
+        return true;
+    }
+
+    
+
+    @Override
+    protected PixEntity getUsingRepository(UUID arg0, Parameters arg1) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getUsingRepository'");
+    }
+
+    @Override
+    protected int updateUsingRepository(PixEntity arg0, Parameters arg1) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'updateUsingRepository'");
+    }
+
+
+    @Override
+    protected Page<PixEntity> listUsingRepository(final Pageable pageable, final Parameters parameters) {
+        return getRepository().findAllByDeletedAtIsNull(pageable);
     }
 
     @Override

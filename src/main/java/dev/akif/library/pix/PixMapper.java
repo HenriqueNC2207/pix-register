@@ -8,7 +8,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Component
-public class PixMapper implements CRUDMapper<UUID, PixEntity, Pix, CreatePix, UpdatePix> {
+public class PixMapper implements CRUDMapper<UUID, PixEntity, Pix, CreatePix, UpdatePix> {  
     @Override
     public PixEntity entityToBeCreatedFrom(final CreatePix createPix, final Instant now) {
         return new PixEntity(createPix.tipoChave(), createPix.valorChave(), createPix.tipoConta(), createPix.numAgencia(), createPix.numConta(), createPix.nomeCorrentista(), createPix.sobrenomeCorrentista(), createPix.tipoPessoa(), now);

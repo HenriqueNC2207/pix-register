@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 )
 @RestControllerAdvice
 @SpringBootApplication
-public class Main implements CRUDErrorHandler {
+public class Main extends ExceptionHandlerAdvice {
     @Bean
     public InstantProvider instantProvider() {
         return InstantProvider.utc;

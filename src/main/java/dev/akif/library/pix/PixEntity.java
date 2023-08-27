@@ -91,18 +91,5 @@ public class PixEntity extends CRUDEntity<UUID> {
     public PixEntity() {
         this(null, null, null, null, null, null, null, null, null, null, null, null, null);
     } 
-    public static PixEntity fromCreatePixDTO(CreatePixDTO createPixDTO, Instant now) {
-        return new PixEntity(
-                createPixDTO.tipoChave(),
-                createPixDTO.valorChave(),
-                createPixDTO.numConta(),
-                createPixDTO.numAgencia(),
-                createPixDTO.numConta(),
-                createPixDTO.nomeCorrentista(),
-                createPixDTO.sobrenomeCorrentista(),
-                createPixDTO.tipoPessoa(),
-                now
-        );
-    }
 }
  
